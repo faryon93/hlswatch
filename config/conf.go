@@ -33,6 +33,8 @@ type Conf struct {
         Listen string `toml:"listen"`
         HlsPath string `toml:"hls_path"`
         ViewerTimeout int `toml:"viewer_timeout"`
+        SslCertificate string `toml:"ssl_certificate"`
+        SslPrivateKey string `toml:"ssl_privatekey"`
     } `toml:"common"`
 
     Influx struct {

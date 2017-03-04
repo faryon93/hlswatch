@@ -7,7 +7,7 @@ To count the number of concurrent viewers hlswatch monitors the m3u8 playlist ac
 As database backend [InfluxDB](https://www.influxdata.com/) is supported only.
 
 ## Configuration
-Per default hlswatch uses the ```/etc/hlswatch/hlswatch.conf``` as configuration file. If you want to change this path, just call hlswatch with your configuration file as the first argument.
+Per default hlswatch uses ```/etc/hlswatch/hlswatch.conf``` as configuration file. If you want to change this path, just call hlswatch with your configuration file as the first argument.
 
 ```
 [common]

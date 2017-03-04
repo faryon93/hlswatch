@@ -36,14 +36,14 @@ import (
 
 const (
     // influx connection options
-    INFLUX_TIMEOUT = 300 * time.Millisecond
+    INFLUX_TIMEOUT = 500 * time.Millisecond
 
     // influx measurement description
     POINT_PRECISION    = "s"
     STREAM_MEASUREMENT = "streams"
     TAG_NODE = "node"
     TAG_STREAM = "stream"
-    VALUE_VIEWER = "viewer"
+    VALUE_VIEWER = "viewers"
 
     // task options
     INFLUX_CYCLE_TIME = 1 * time.Second
@@ -102,9 +102,11 @@ func InfluxMetrics(ctx *state.State) {
         }
 
         // write the datapoints to influx
-        err = influx.Write(bp)
-        if err != nil {
-            log.Println("[influx] failed to write datapoint:", err.Error())
+        if len(bp.Points()) > 0 {
+            err = influx.Write(bp)
+            if err != nil {
+                log.Println("[influx] failed to write datapoint:", err.Error())
+            }
         }
 
         time.Sleep(INFLUX_CYCLE_TIME)

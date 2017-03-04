@@ -82,13 +82,27 @@ func main() {
 
     // setup the http static file server serving the playlists
     // TODO: gzip compression for playlist, caching in ram, inotify, ...
+    rootfs := http.Dir(conf.Common.HlsPath)
     mux := http.NewServeMux()
-    mux.Handle("/", handler.Hls(Ctx, http.FileServer(http.Dir(conf.Common.HlsPath))))
+    mux.Handle("/", handler.Hls(Ctx, http.FileServer(rootfs)))
     srv := &http.Server{Addr: conf.Common.Listen, Handler: mux}
 
     // serve the content via http
     go func() {
-        if err := srv.ListenAndServe(); err != nil {
+        // setup a tls server if configured
+        var err error = nil
+        if len(conf.Common.SslCertificate) > 0 &&
+           len(conf.Common.SslPrivateKey) > 0 {
+
+            err = srv.ListenAndServeTLS(conf.Common.SslCertificate,
+                                        conf.Common.SslPrivateKey)
+
+        // plain old http server
+        } else {
+            err = srv.ListenAndServe()
+        }
+
+        if err != nil {
             log.Println("failed start http server:", err.Error())
             os.Exit(-1) // TODO: clean shutdown
         }
