@@ -22,6 +22,13 @@ user = "hlswatch"
 password = "hlswatch"
 ```
 
+## Tested Players
+The application was tested with the following web players:
+
+Player                                     | Working |
+-------------------------------------------|---------|
+[clappr](https://github.com/clappr/clappr) |    ✔   |
+
 ## ToDo
 - HTTPS support to ensure SSL termination
 - Caching of m3u8 playlist and video fragments in RAM
