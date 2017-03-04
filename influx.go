@@ -36,7 +36,8 @@ import (
 
 const (
     // influx connection options
-    INFLUX_TIMEOUT = 500 * time.Millisecond
+    INFLUX_TIMEOUT      = 500 * time.Millisecond
+    INFLUX_FAIL_COUNT   = 15
 
     // influx measurement description
     POINT_PRECISION    = "s"
@@ -75,6 +76,9 @@ func InfluxMetrics(ctx *state.State) {
     }
     viewerTimeout := time.Duration(ctx.Conf.Common.ViewerTimeout) * time.Second
 
+    // variables for runtime
+    failCount := 0
+
     for {
         // A new batch of points
         bp, _ := client.NewBatchPoints(client.BatchPointsConfig{
@@ -106,6 +110,16 @@ func InfluxMetrics(ctx *state.State) {
             err = influx.Write(bp)
             if err != nil {
                 log.Println("[influx] failed to write datapoint:", err.Error())
+
+                failCount++
+                if failCount >= INFLUX_FAIL_COUNT {
+                    log.Println("[influx] reached fail count, disabling module")
+                    return
+                }
+
+            // reset the failcount
+            } else {
+                failCount = 0
             }
         }
 
