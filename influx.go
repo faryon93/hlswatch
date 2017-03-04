@@ -111,6 +111,7 @@ func InfluxMetrics(ctx *state.State) {
             if err != nil {
                 log.Println("[influx] failed to write datapoint:", err.Error())
 
+                // check the fail count and disable this module if necessary
                 failCount++
                 if failCount >= INFLUX_FAIL_COUNT {
                     log.Println("[influx] reached fail count, disabling module")

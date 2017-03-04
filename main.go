@@ -91,9 +91,7 @@ func main() {
     go func() {
         // setup a tls server if configured
         var err error = nil
-        if len(conf.Common.SslCertificate) > 0 &&
-           len(conf.Common.SslPrivateKey) > 0 {
-
+        if conf.IsSslEnabled() {
             err = srv.ListenAndServeTLS(conf.Common.SslCertificate,
                                         conf.Common.SslPrivateKey)
 

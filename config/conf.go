@@ -29,14 +29,16 @@ import (
 // --------------------------------------------------------------------------------------
 
 type Conf struct {
+    // common configuration options
     Common struct {
         Listen string `toml:"listen"`
-        HlsPath string `toml:"hls_path"`
-        ViewerTimeout int `toml:"viewer_timeout"`
         SslCertificate string `toml:"ssl_certificate"`
         SslPrivateKey string `toml:"ssl_privatekey"`
+        HlsPath string `toml:"hls_path"`
+        ViewerTimeout int `toml:"viewer_timeout"`
     } `toml:"common"`
 
+    // influx database
     Influx struct {
         Address string `toml:"address"`
         User string `toml:"user"`
@@ -58,4 +60,14 @@ func Load(path string) (*Conf, error) {
     }
 
     return &conf, nil
+}
+
+
+// --------------------------------------------------------------------------------------
+//  public members
+// --------------------------------------------------------------------------------------
+
+func (c *Conf) IsSslEnabled() (bool) {
+    return len(c.Common.SslCertificate) > 0 &&
+           len(c.Common.SslPrivateKey) > 0
 }
