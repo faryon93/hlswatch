@@ -15,7 +15,6 @@ package state
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 // --------------------------------------------------------------------------------------
 //  imports
 // --------------------------------------------------------------------------------------
@@ -53,7 +52,7 @@ func (s *Stream) GetCurrentViewers(timeout time.Duration) int {
     count := 0
     for _, viewer := range s.Viewers {
         // only count those who did not time out already
-        if viewer.LastSeen.Add(timeout * time.Second).After(time.Now()) {
+        if viewer.LastSeen.Add(timeout).After(time.Now()) {
             count++
         }
     }

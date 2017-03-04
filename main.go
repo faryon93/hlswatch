@@ -15,14 +15,12 @@ package main
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 // --------------------------------------------------------------------------------------
 //  imports
 // --------------------------------------------------------------------------------------
 
 import(
     "log"
-    "flag"
     "runtime"
     "os"
     "os/signal"
@@ -33,6 +31,16 @@ import(
 
     "github.com/faryon93/hlswatch/handler"
     "github.com/faryon93/hlswatch/state"
+    "github.com/faryon93/hlswatch/config"
+)
+
+
+// --------------------------------------------------------------------------------------
+//  constants
+// --------------------------------------------------------------------------------------
+
+const (
+    SHUTDOWN_GRACEPERIOD = 5 * time.Second
 )
 
 
@@ -42,14 +50,10 @@ import(
 
 var (
     // configuration options
-    listen          string
-    hlsPath         string
-    shutdownTimeout time.Duration
-    viewerTimeout   time.Duration
-    cycleTime       time.Duration
+    configFile = "/etc/hlswatch.conf"
 
     // runtime variables
-    Context *state.State = state.New()
+    Ctx *state.State = state.New()
 )
 
 
@@ -64,18 +68,23 @@ func main() {
     runtime.GOMAXPROCS(runtime.NumCPU())
 
     // parse command line arguments
-    flag.StringVar(&listen, "listen", ":3000", "")
-    flag.StringVar(&hlsPath, "hlspath", "/tmp/hls", "")
-    flag.DurationVar(&viewerTimeout, "viewertimeout", 10, "")
-    flag.DurationVar(&shutdownTimeout, "shutdowntimeout", 5, "")
-    flag.DurationVar(&cycleTime, "cycletime", 1, "")
-    flag.Parse()
+    if len(os.Args) > 1 {
+        configFile = os.Args[1]
+    }
+
+    // load and parse the configuration file
+    conf, err := config.Load(configFile)
+    if err != nil {
+        log.Println("failed to load configuration file", configFile + ":", err.Error())
+        os.Exit(-1)
+    }
+    Ctx.Conf = conf
 
     // setup the http static file server serving the playlists
     // TODO: gzip compression for playlist, caching in ram, inotify, ...
     mux := http.NewServeMux()
-    mux.Handle("/", handler.Hls(Context, http.FileServer(http.Dir(hlsPath))))
-    srv := &http.Server{Addr: listen, Handler: mux}
+    mux.Handle("/", handler.Hls(Ctx, http.FileServer(http.Dir(conf.Common.HlsPath))))
+    srv := &http.Server{Addr: conf.Common.Listen, Handler: mux}
 
     // serve the content via http
     go func() {
@@ -84,17 +93,17 @@ func main() {
             os.Exit(-1) // TODO: clean shutdown
         }
     }()
-    log.Println("http is listening on", listen)
+    log.Println("http is listening on", conf.Common.Listen)
 
     // fire the statistics computation task
-    go StatisticsTask(Context)
+    go InfluxMetrics(Ctx)
 
     // wait for a signal to shutdown the application
     wait(os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
     log.Println("gracefully shutting down application...")
 
     // gracefully shutdown the server
-    ctx, _ := context.WithTimeout(context.Background(), shutdownTimeout * time.Second)
+    ctx, _ := context.WithTimeout(context.Background(), SHUTDOWN_GRACEPERIOD)
     srv.Shutdown(ctx)
 
     log.Println("application successfully exited")

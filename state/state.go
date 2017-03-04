@@ -15,13 +15,13 @@ package state
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 // --------------------------------------------------------------------------------------
 //  imports
 // --------------------------------------------------------------------------------------
 
 import (
     "sync"
+    "github.com/faryon93/hlswatch/config"
 )
 
 
@@ -30,6 +30,8 @@ import (
 // --------------------------------------------------------------------------------------
 
 type State struct {
+    Conf *config.Conf
+
     Streams map[string]*Stream
     StreamMutex sync.Mutex
 }

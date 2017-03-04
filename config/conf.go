@@ -1,4 +1,4 @@
-package main
+package config
 // hlswatch - keep track of hls viewer stats
 // Copyright (C) 2017 Maximilian Pachl
 
@@ -15,35 +15,45 @@ package main
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 // --------------------------------------------------------------------------------------
 //  imports
 // --------------------------------------------------------------------------------------
 
 import (
-    "log"
-    "time"
-
-    "github.com/faryon93/hlswatch/state"
+    "github.com/BurntSushi/toml"
 )
+
+
+// --------------------------------------------------------------------------------------
+//  types
+// --------------------------------------------------------------------------------------
+
+type Conf struct {
+    Common struct {
+        Listen string `toml:"listen"`
+        HlsPath string `toml:"hls_path"`
+        ViewerTimeout int `toml:"viewer_timeout"`
+    } `toml:"common"`
+
+    Influx struct {
+        Address string `toml:"address"`
+        User string `toml:"user"`
+        Password string `toml:"password"`
+        Database string `toml:"database"`
+    } `toml:"influx"`
+}
 
 
 // --------------------------------------------------------------------------------------
 //  public functions
 // --------------------------------------------------------------------------------------
 
-func StatisticsTask(ctx *state.State) {
-    lastCount := 0
-
-    for {
-        // echo the concurrent viewer count when it has changed only
-        count := ctx.GetStream("futurama").GetCurrentViewers(viewerTimeout)
-        if count != lastCount {
-            log.Print("[futurama] concurrent viewers: ", count)
-            lastCount = count
-        }
-
-        // wait for the next computation round
-        time.Sleep(cycleTime * time.Second)
+func Load(path string) (*Conf, error) {
+    // decode the conf file to struct
+    var conf Conf
+    if _, err := toml.DecodeFile(path, &conf); err != nil {
+        return nil, err
     }
+
+    return &conf, nil
 }
