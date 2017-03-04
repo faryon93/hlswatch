@@ -26,8 +26,9 @@ import (
     "net/http"
     "crypto/rand"
     "encoding/base64"
-    "github.com/faryon93/hlswatch/state"
     "log"
+
+    "github.com/faryon93/hlswatch/state"
 )
 
 
@@ -67,6 +68,7 @@ func Hls(ctx *state.State, h http.Handler) http.Handler {
             // we do not want caching for the playlist, because it changes
             // everytime a new video fragment is created
             w.Header().Set("Cache-Control", "no-cache")
+            w.Header().Set("Content-Type", "application/vnd.apple.mpegurl")
 
             // generate a new token if the client does not supply one
             if token == "" {
