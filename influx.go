@@ -35,6 +35,9 @@ import (
 // --------------------------------------------------------------------------------------
 
 const (
+    // influx connection options
+    INFLUX_TIMEOUT = 300 * time.Millisecond
+
     // influx measurement description
     POINT_PRECISION    = "s"
     STREAM_MEASUREMENT = "streams"
@@ -57,6 +60,7 @@ func InfluxMetrics(ctx *state.State) {
         Addr: ctx.Conf.Influx.Address,
         Username: ctx.Conf.Influx.User,
         Password: ctx.Conf.Influx.Password,
+        Timeout: INFLUX_TIMEOUT,
     })
     if err != nil {
         log.Println("[influx] failed to connect to influxdb:", err.Error())

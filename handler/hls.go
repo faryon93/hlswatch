@@ -48,6 +48,9 @@ const (
 
 func Hls(ctx *state.State, h http.Handler) http.Handler {
     f := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        // headers applicable for all files
+        w.Header().Set("Access-Control-Allow-Origin", "*")
+
         // We keep track of the concurrent users by watching the
         // m3u8 accesses. Each clients gets a unique token assigned
         // wich is used to identify it. In order to get the new video fragments

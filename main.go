@@ -75,7 +75,7 @@ func main() {
     // load and parse the configuration file
     conf, err := config.Load(configFile)
     if err != nil {
-        log.Println("failed to load configuration file", configFile + ":", err.Error())
+        log.Println("failed to load configuration file:", err.Error())
         os.Exit(-1)
     }
     Ctx.Conf = conf
