@@ -1,4 +1,4 @@
-package state
+package util
 // hlswatch - keep track of hls viewer stats
 // Copyright (C) 2017 Maximilian Pachl
 
@@ -20,36 +20,19 @@ package state
 // --------------------------------------------------------------------------------------
 
 import (
-    "github.com/faryon93/hlswatch/config"
+    "os"
 )
-
-
-// --------------------------------------------------------------------------------------
-//  types
-// --------------------------------------------------------------------------------------
-
-type State struct {
-    Conf *config.Conf
-
-    Streams map[string]*Stream
-}
 
 
 // --------------------------------------------------------------------------------------
 //  constructors
 // --------------------------------------------------------------------------------------
 
-func New() *State {
-    return &State{
-        Streams: make(map[string]*Stream),
+func IsDir(path string) bool {
+    finfo, err := os.Stat(path)
+    if err != nil {
+        return false
     }
-}
 
-
-// --------------------------------------------------------------------------------------
-//  public members
-// --------------------------------------------------------------------------------------
-
-func (s *State) GetStream(name string) (*Stream) {
-    return s.Streams[name]
+    return finfo.IsDir()
 }

@@ -1,4 +1,4 @@
-package state
+package handler
 // hlswatch - keep track of hls viewer stats
 // Copyright (C) 2017 Maximilian Pachl
 
@@ -20,36 +20,36 @@ package state
 // --------------------------------------------------------------------------------------
 
 import (
-    "github.com/faryon93/hlswatch/config"
+    "net/http"
+
+    "github.com/faryon93/hlswatch/state"
+    "time"
 )
 
 
 // --------------------------------------------------------------------------------------
-//  types
+//  type
 // --------------------------------------------------------------------------------------
 
-type State struct {
-    Conf *config.Conf
-
-    Streams map[string]*Stream
+type streamStats struct {
+    CurrentViewers int `json:"current_viewers"`
 }
 
 
 // --------------------------------------------------------------------------------------
-//  constructors
+//  http handler
 // --------------------------------------------------------------------------------------
 
-func New() *State {
-    return &State{
-        Streams: make(map[string]*Stream),
+func Stats(ctx *state.State, w http.ResponseWriter, r *http.Request) {
+    timeout := time.Duration(ctx.Conf.Common.ViewerTimeout) * time.Second
+
+    // construct the response
+    s := make(map[string]streamStats)
+    for streamName, stream := range ctx.Streams {
+        s[streamName] = streamStats{
+            CurrentViewers: stream.GetCurrentViewers(timeout),
+        }
     }
-}
 
-
-// --------------------------------------------------------------------------------------
-//  public members
-// --------------------------------------------------------------------------------------
-
-func (s *State) GetStream(name string) (*Stream) {
-    return s.Streams[name]
+    Jsonify(w, s)
 }

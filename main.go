@@ -19,7 +19,7 @@ package main
 //  imports
 // --------------------------------------------------------------------------------------
 
-import(
+import (
     "log"
     "runtime"
     "os"
@@ -85,6 +85,7 @@ func main() {
     rootfs := http.Dir(conf.Common.HlsPath)
     mux := http.NewServeMux()
     mux.Handle("/", handler.Hls(Ctx, http.FileServer(rootfs)))
+    route(mux, "/stats", handler.Stats, Ctx)
     srv := &http.Server{Addr: conf.Common.Listen, Handler: mux}
 
     // serve the content via http
@@ -109,6 +110,7 @@ func main() {
 
     // fire the statistics computation task
     go InfluxMetrics(Ctx)
+    go StreamWatcher(Ctx)
 
     // wait for a signal to shutdown the application
     wait(os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -131,3 +133,11 @@ func wait(sig ...os.Signal) {
     signal.Notify(signals, sig...)
     <- signals
 }
+
+func route(mux *http.ServeMux, pattern string, handler handler.Handler, ctx *state.State) {
+    f := http.HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
+        handler(ctx, w, r)
+    })
+    mux.Handle(pattern, f)
+}
+

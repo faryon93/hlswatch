@@ -64,7 +64,11 @@ func Hls(ctx *state.State, h http.Handler) http.Handler {
                 http.Error(w, "invalid streaming url", http.StatusNotAcceptable)
                 return
             }
-            stream := ctx.GetStream(streamName);
+            stream := ctx.GetStream(streamName)
+            if stream == nil {
+                http.Error(w, "invalid hls stream", http.StatusNotFound)
+                return
+            }
             token := r.URL.Query().Get(TOKEN_URL_PARAMETER)
             viewer := stream.Viewers[token]
 

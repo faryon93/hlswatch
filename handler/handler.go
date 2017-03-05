@@ -1,4 +1,4 @@
-package state
+package handler
 // hlswatch - keep track of hls viewer stats
 // Copyright (C) 2017 Maximilian Pachl
 
@@ -20,7 +20,10 @@ package state
 // --------------------------------------------------------------------------------------
 
 import (
-    "github.com/faryon93/hlswatch/config"
+    "net/http"
+    "encoding/json"
+
+    "github.com/faryon93/hlswatch/state"
 )
 
 
@@ -28,28 +31,23 @@ import (
 //  types
 // --------------------------------------------------------------------------------------
 
-type State struct {
-    Conf *config.Conf
-
-    Streams map[string]*Stream
-}
+type Handler func(ctx *state.State, w http.ResponseWriter, r *http.Request)
 
 
 // --------------------------------------------------------------------------------------
-//  constructors
+//  public functions
 // --------------------------------------------------------------------------------------
 
-func New() *State {
-    return &State{
-        Streams: make(map[string]*Stream),
+// Writes the JSON representation of v to the supplied http.ResposeWriter.
+// If an error occours while marshalling the object the http response
+// will be an internal server error.
+func Jsonify(w http.ResponseWriter, v interface{}) {
+    js, err := json.Marshal(v)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
     }
-}
 
-
-// --------------------------------------------------------------------------------------
-//  public members
-// --------------------------------------------------------------------------------------
-
-func (s *State) GetStream(name string) (*Stream) {
-    return s.Streams[name]
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(js)
 }
