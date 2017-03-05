@@ -30,6 +30,7 @@ import (
 
 type Stream struct {
     Viewers map[string]*Viewer
+    StartTime time.Time
 }
 
 
@@ -40,6 +41,7 @@ type Stream struct {
 func NewStream() *Stream {
     return &Stream{
         Viewers: make(map[string]*Viewer),
+        StartTime: time.Now(),
     }
 }
 
@@ -58,4 +60,8 @@ func (s *Stream) GetCurrentViewers(timeout time.Duration) int {
     }
 
     return count
+}
+
+func (s *Stream) GetUptime() time.Duration {
+    return time.Now().Sub(s.StartTime)
 }

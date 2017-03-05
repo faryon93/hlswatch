@@ -32,7 +32,11 @@ import (
 // --------------------------------------------------------------------------------------
 
 type streamStats struct {
+    // number of current viewers
     CurrentViewers int `json:"current_viewers"`
+
+    // uptime of stream in seconds
+    Uptime int `json:"uptime"`
 }
 
 
@@ -44,12 +48,13 @@ func Stats(ctx *state.State, w http.ResponseWriter, r *http.Request) {
     timeout := time.Duration(ctx.Conf.Common.ViewerTimeout) * time.Second
 
     // construct the response
-    s := make(map[string]streamStats)
+    response := make(map[string]streamStats)
     for streamName, stream := range ctx.Streams {
-        s[streamName] = streamStats{
+        response[streamName] = streamStats{
             CurrentViewers: stream.GetCurrentViewers(timeout),
+            Uptime: int(stream.GetUptime().Seconds()),
         }
     }
 
-    Jsonify(w, s)
+    Jsonify(w, response)
 }
