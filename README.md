@@ -22,6 +22,28 @@ user = "hlswatch"
 password = "hlswatch"
 ```
 
+## NGINX Setup
+Because this software is responsible for delivering all data to the client it is not necessary to serve the HLS fragments via nginx to the public. If you want all NGINX features like access control, compression, ... you can reverse proxy incoming requests by NGINX to hlswatch.
+This software relies on some configuration option the nginx-rtmp-module offers. The settings `hls_cleanup` and `hls_nested` need to be enabled:
+
+```
+rtmp {
+    server {
+        listen 1935;
+        chunk_size 4000;
+
+        application live {
+            live on;
+            hls on;
+            hls_fragment_naming system;
+            hls_fragment 5s;
+            hls_path /tmp/hls;
+            hls_nested on;
+        }
+    }
+}
+```
+
 ## Tested Players
 The application was tested with the following web players:
 
