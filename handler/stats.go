@@ -21,9 +21,9 @@ package handler
 
 import (
     "net/http"
+    "time"
 
     "github.com/faryon93/hlswatch/state"
-    "time"
 )
 
 

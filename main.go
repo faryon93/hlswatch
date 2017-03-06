@@ -140,4 +140,3 @@ func route(mux *http.ServeMux, pattern string, handler handler.Handler, ctx *sta
     })
     mux.Handle(pattern, f)
 }
-
