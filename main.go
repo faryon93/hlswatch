@@ -90,8 +90,9 @@ func main() {
 
     // serve the content via http
     go func() {
-        // setup a tls server if configured
         var err error = nil
+
+        // setup a tls server if configured
         if conf.IsSslEnabled() {
             err = srv.ListenAndServeTLS(conf.Common.SslCertificate,
                                         conf.Common.SslPrivateKey)
@@ -103,12 +104,13 @@ func main() {
 
         if err != nil {
             log.Println("failed start http server:", err.Error())
-            os.Exit(-1) // TODO: clean shutdown
+            Ctx.Shutdown() // gracefull shutdown the application
         }
     }()
     log.Println("http is listening on", conf.Common.Listen)
 
     // fire the statistics computation task
+    // TODO: close connections, ...
     go InfluxMetrics(Ctx)
     go StreamWatcher(Ctx)
 
@@ -116,7 +118,7 @@ func main() {
     wait(os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
     log.Println("gracefully shutting down application...")
 
-    // gracefully shutdown the server
+    // gracefully shutdown the http server
     ctx, _ := context.WithTimeout(context.Background(), SHUTDOWN_GRACEPERIOD)
     srv.Shutdown(ctx)
 
@@ -131,7 +133,12 @@ func main() {
 func wait(sig ...os.Signal) {
     signals := make(chan os.Signal)
     signal.Notify(signals, sig...)
-    <- signals
+
+    // wait for an OS signal or a signal by the close Channel
+    select {
+        case <- signals:
+        case <- Ctx.CloseChan:
+    }
 }
 
 func route(mux *http.ServeMux, pattern string, handler handler.Handler, ctx *state.State) {

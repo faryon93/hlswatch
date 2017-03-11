@@ -31,6 +31,7 @@ import (
 type State struct {
     Conf *config.Conf
 
+    CloseChan chan bool
     Streams map[string]*Stream
 }
 
@@ -41,6 +42,7 @@ type State struct {
 
 func New() *State {
     return &State{
+        CloseChan: make(chan bool),
         Streams: make(map[string]*Stream),
     }
 }
@@ -52,4 +54,8 @@ func New() *State {
 
 func (s *State) GetStream(name string) (*Stream) {
     return s.Streams[name]
+}
+
+func (s *State) Shutdown() {
+    s.CloseChan <- true
 }
