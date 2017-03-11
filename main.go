@@ -62,7 +62,7 @@ var (
 // --------------------------------------------------------------------------------------
 
 func main() {
-    log.Println("hlswatch version 0.1 #54dasf78")
+    log.Println(GetAppIdentifier())
 
     // setup go environment to use all available cpu cores
     runtime.GOMAXPROCS(runtime.NumCPU())
