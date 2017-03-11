@@ -22,6 +22,8 @@ user = "hlswatch"
 password = "hlswatch"
 ```
 
+Some configuration parameters can be overriden by environment variables. See ```config/config.go``` for valid variable names. Note: Not all parameters can be replaced by environment variables.
+
 ## NGINX Setup
 Because this software is responsible for delivering all data to the client it is not necessary to serve the HLS fragments via nginx to the public. If you want all NGINX features like access control, compression, ... you can reverse proxy incoming requests by NGINX to hlswatch.
 This software relies on some configuration option the nginx-rtmp-module offers. The settings `hls_cleanup` and `hls_nested` need to be enabled:

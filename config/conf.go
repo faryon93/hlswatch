@@ -20,7 +20,18 @@ package config
 // --------------------------------------------------------------------------------------
 
 import (
+    "reflect"
+
     "github.com/BurntSushi/toml"
+)
+
+
+// --------------------------------------------------------------------------------------
+//  constants
+// --------------------------------------------------------------------------------------
+
+const (
+    ENV_PREFIX = "HLS"
 )
 
 
@@ -40,11 +51,11 @@ type Conf struct {
 
     // influx database
     Influx struct {
-        Address string `toml:"address"`
-        User string `toml:"user"`
-        Password string `toml:"password"`
-        Database string `toml:"database"`
-    } `toml:"influx"`
+        Address string `toml:"address" env:"ADDR"`          // HLS_INFLUX_ADDR
+        User string `toml:"user" env:"USER"`                // HLS_INFLUX_USER
+        Password string `toml:"password" env:"PASSWORD"`    // HLS_INFLUX_PASSWORD
+        Database string `toml:"database" env:"DB"`          // HLS_INFLUX_DB
+    } `toml:"influx" env:"INFLUX"`
 }
 
 
@@ -56,6 +67,12 @@ func Load(path string) (*Conf, error) {
     // decode the conf file to struct
     var conf Conf
     if _, err := toml.DecodeFile(path, &conf); err != nil {
+        return nil, err
+    }
+
+    // apply all configuration overrides from environment variables
+    err := applyEnvOverrides(ENV_PREFIX, reflect.ValueOf(&conf))
+    if err != nil {
         return nil, err
     }
 
@@ -71,3 +88,4 @@ func (c *Conf) IsSslEnabled() (bool) {
     return len(c.Common.SslCertificate) > 0 &&
            len(c.Common.SslPrivateKey) > 0
 }
+

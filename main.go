@@ -81,7 +81,7 @@ func main() {
     Ctx.Conf = conf
 
     // setup the http static file server serving the playlists
-    // TODO: gzip compression for playlist, caching in ram, inotify, ...
+    // TODO: gzip compression for playlist, caching in ram
     rootfs := http.Dir(conf.Common.HlsPath)
     mux := http.NewServeMux()
     mux.Handle("/", handler.Hls(Ctx, http.FileServer(rootfs)))
