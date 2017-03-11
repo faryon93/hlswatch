@@ -65,7 +65,14 @@ func InfluxMetrics(ctx *state.State) {
     })
     if err != nil {
         log.Println("[influx] failed to connect to influxdb:", err.Error())
-        os.Exit(-1)
+        return
+    }
+
+    // check the connectivity
+    _, _, err = influx.Ping(INFLUX_TIMEOUT)
+    if err != nil {
+        log.Println("[influx] failed to connect to influxdb:", err.Error())
+        return
     }
 
     // some data needed for the measurements
