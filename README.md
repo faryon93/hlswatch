@@ -1,12 +1,12 @@
 # hlswatch - keep track of hls viewer stats
-hlswatch is a simple program to keep track of the concurrent viewer count of a [HLS](https://tools.ietf.org/html/draft-pantos-http-live-streaming-20) live stream. This peace of software is intended to be placed in front of a NGINX server with the [nginx-rtmp-module](https://github.com/arut/nginx-rtmp-module) installed and HLS encoding enabled.
+hlswatch is a simple program to keep track of the concurrent viewer count of a [HLS](https://tools.ietf.org/html/draft-pantos-http-live-streaming-20) live stream. This piece of software is intended to be placed in front of a NGINX server with the [nginx-rtmp-module](https://github.com/arut/nginx-rtmp-module) installed and HLS encoding enabled.
 The NGINX server is used as a transcoding instance to translate an incoming RTMP stream into HLS compatible video fragments. Delivering the fragments and playlists to the clients is handled by hlswatch.
 
 To count the number of concurrent viewers hlswatch monitors the m3u8 playlist accesses per client. If the client does not issue a playlist reload in a certain amount if time it is considered as "not watching anymore".
 
 At least [Go 1.8](https://golang.org/doc/devel/release.html#go1.8) is required to build hlswatch. As database backend [InfluxDB](https://www.influxdata.com/) is supported only (for now).
 
-Keep in mind that this peace of software hasn't been tested in production!
+Keep in mind that this piece of software hasn't been tested in production!
 
 ## Configuration
 Per default hlswatch uses ```/etc/hlswatch/hlswatch.conf``` as configuration file. If you want to change this path, just call hlswatch with your configuration file as the first argument.
@@ -76,3 +76,4 @@ $: docker run --rm -t -i \
 ## ToDo
 - Caching of m3u8 playlist and video fragments in RAM
 - Disable directory listing in hlswatch
+- Execute hlswatch as unprivileged user (proper process supervision)
