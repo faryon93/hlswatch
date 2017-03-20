@@ -64,7 +64,7 @@ Running the container:
 ```
 $: docker run --rm -t -i \
               --name nginx-hls \
-              -p 1935:1935
+              -p 1935:1935 \
               -p 80:80 \
               -e HLS_INFLUX_ADDR=http://localhost:8086 \
               -e HLS_INFLUX_DB=hlswatch \
