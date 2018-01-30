@@ -66,6 +66,7 @@ func main() {
 
     // setup go environment to use all available cpu cores
     runtime.GOMAXPROCS(runtime.NumCPU())
+    log.Println("using up to", runtime.NumCPU(), "cpu cores")
 
     // parse command line arguments
     if len(os.Args) > 1 {
@@ -103,7 +104,7 @@ func main() {
         }
 
         if err != nil {
-            log.Println("failed start http server:", err.Error())
+            log.Println("failed to start http server:", err.Error())
             Ctx.Shutdown() // gracefull shutdown the application
         }
     }()
