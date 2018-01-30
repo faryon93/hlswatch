@@ -1,2 +1,5 @@
 .idea/
+.build/
 misc/
+rootfs/usr/sbin/hlswatch
+.directory
