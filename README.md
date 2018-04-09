@@ -10,9 +10,13 @@ The gathered data can be obtained in two different ways:
 
 2. A REST endpoint is exposed on the address/port configured in ```common.listen```. A JSON object can be accessed at ```/stats```, which contains the current viewer numbers for each stream.
 
-At least [Go 1.8](https://golang.org/doc/devel/release.html#go1.8) is required to build hlswatch.
+**Keep in mind that this piece of software hasn't been tested in production!**
 
-Keep in mind that this piece of software hasn't been tested in production!
+## Building
+The Go application is built as part of the Docker image build process.
+In order to build a fresh copy of *hlswatch* you just have to enter:
+
+    $: docker build -t faryon93/hlswatch .
 
 ## Configuration
 Per default hlswatch uses ```/etc/hlswatch/hlswatch.conf``` as configuration file. If you want to change this path, just call hlswatch with your configuration file as the first argument.
@@ -66,8 +70,7 @@ Player                                     | Working |
 [clappr](https://github.com/clappr/clappr) |    ✔    |
 
 ## Docker
-This repository contains a Dockerfile, which builds a container which contains an NGINX webserver compiled with the nginx-rtmp-module. And some configuration files to enable live streaming via RTMP and pass all HTTP requests to hlswatch. To build hlswatch and the container a simple ```make``` is enough. 
-
+This repository contains a Dockerfile, which builds a container which contains an NGINX webserver compiled with the nginx-rtmp-module. And some configuration files to enable live streaming via RTMP and pass all HTTP requests to hlswatch.
 For production use you should consider adding SSL termination in NGINX and secure the access to hlswatchs statistics page.
 
 Running the container:
