@@ -58,10 +58,6 @@ rtmp {
 }
 ```
 
-## How to get my data?
-
-
-
 ## Tested Players
 The application was tested with the following web players:
 
