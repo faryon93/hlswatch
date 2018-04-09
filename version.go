@@ -22,7 +22,7 @@ package main
 var (
     // release information
     APP_NAME = "hlswatch"
-    APP_VERSION = "0.1.0"
+    APP_VERSION = "0.1.1"
 
     // filled by build tool
     GIT_COMMIT string
