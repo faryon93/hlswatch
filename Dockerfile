@@ -1,4 +1,18 @@
-FROM alpine:3.5
+FROM golang:alpine as builder
+MAINTAINER Maximilian Pachl <m@ximilian.info>
+# setup the environment
+ENV TZ=Europe/Berlin
+
+# install dependencies
+RUN apk --update --no-cache add git gcc musl-dev tzdata
+WORKDIR /go/src/github.com/faryon93/hlswatch
+ADD src/ ./
+
+# build the go binary
+RUN go get github.com/faryon93/hlswatch && \
+    go build -v -o /tmp/hlswatch .
+
+FROM alpine:latest
 MAINTAINER Maximilian Pachl <m@ximilian.info>
 
 # configuration and versions
@@ -37,7 +51,6 @@ RUN apk add --update $BUILD_TOOLS $RUNTIME_LIBS && \
 	make -j5 && \
 	make install && \
 	rm -r /usr/html && \
-
 # remove build tools
 	rm -r /tmp/nginx-$NGINX_VERSION && \
 	rm -r /tmp/nginx-rtmp-module-master && \
@@ -55,10 +68,13 @@ EXPOSE 80
 EXPOSE 443
 
 # setup the rootfs
-ADD rootfs /
+ADD hlswatch.conf /etc/
+ADD nginx.conf /etc/nginx/nginx.conf
+ADD entry.sh /
+COPY --from=builder /tmp/hlswatch /usr/sbin/hlswatch
 RUN mkdir /tmp/hls && \
-    chmod 755 /usr/sbin/startup && \
+    chmod 755 /entry.sh && \
     chmod 755 /usr/sbin/hlswatch
 
 # start command
-CMD ["/usr/sbin/startup"]
+CMD ["/entry.sh"]

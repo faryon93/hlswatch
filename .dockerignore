@@ -1,6 +1,5 @@
 .build/
 .git/
-src/
 LICENSE.txt
 README.txt
 Makefile
