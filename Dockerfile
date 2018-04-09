@@ -6,7 +6,7 @@ ENV TZ=Europe/Berlin
 # install dependencies
 RUN apk --update --no-cache add git gcc musl-dev tzdata
 WORKDIR /go/src/github.com/faryon93/hlswatch
-ADD src/ ./
+ADD ./ ./
 
 # build the go binary
 RUN go get github.com/faryon93/hlswatch && \
