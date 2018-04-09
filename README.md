@@ -66,7 +66,9 @@ Player                                     | Working |
 [clappr](https://github.com/clappr/clappr) |    ✔    |
 
 ## Docker
-This repository contains a Dockerfile, which builds a container which contains an NGINX webserver compiled with the nginx-rtmp-module. And some configuration files to enable live streaming via RTMP and pass all HTTP requests to hlswatch.
+This repository contains a Dockerfile, which builds a container which contains an NGINX webserver compiled with the nginx-rtmp-module.
+The current version contained in the master branch is automatically pushed to [Docker Hub](https://hub.docker.com/r/faryon93/hlswatch/).
+Some configuration files to enable live streaming via RTMP and pass all HTTP requests to hlswatch is included by default.
 For production use you should consider adding SSL termination in NGINX and secure the access to hlswatchs statistics page.
 
 Running the container:
@@ -79,7 +81,7 @@ $: docker run --rm -t -i \
               -e HLS_INFLUX_DB=hlswatch \
               -e HLS_INFLUX_USER=hlswatch \
               -e HLS_INFLUX_PASSWORD=hlswatch \
-              faryon93/nginx-hls:latest
+              faryon93/hlswatch
 ```
 
 ## ToDo
