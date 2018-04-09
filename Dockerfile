@@ -16,7 +16,7 @@ FROM alpine:latest
 MAINTAINER Maximilian Pachl <m@ximilian.info>
 
 # configuration and versions
-ENV NGINX_VERSION="1.11.9"
+ENV NGINX_VERSION="1.13.11"
 ENV BUILD_TOOLS="g++ make pcre-dev openssl-dev unzip"
 ENV RUNTIME_LIBS="openssl pcre"
 
