@@ -96,6 +96,7 @@ func InfluxMetrics(ctx *state.State) {
         startTime := time.Now()
 
         // save the numbers for all streams to influx db
+        ctx.StreamsMutex.Lock()
         for streamName, stream := range ctx.Streams {
             count := stream.GetCurrentViewers(viewerTimeout)
             pt, _ := client.NewPoint(
@@ -111,6 +112,7 @@ func InfluxMetrics(ctx *state.State) {
             )
             bp.AddPoint(pt)
         }
+        ctx.StreamsMutex.Unlock()
 
         // write the datapoints to influx
         if len(bp.Points()) > 0 {

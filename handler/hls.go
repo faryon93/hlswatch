@@ -69,8 +69,12 @@ func Hls(ctx *state.State, h http.Handler) http.Handler {
                 http.Error(w, "invalid hls stream", http.StatusNotFound)
                 return
             }
+
+            // get the viewer by its token
             token := r.URL.Query().Get(TOKEN_URL_PARAMETER)
+            stream.Lock()
             viewer := stream.Viewers[token]
+            stream.Unlock()
 
             // we do not want caching for the playlist, because it changes
             // everytime a new video fragment is created
@@ -80,11 +84,14 @@ func Hls(ctx *state.State, h http.Handler) http.Handler {
             // generate a new token if the client does not supply one
             if token == "" {
                 token = nextToken()
+
+                stream.Lock()
                 stream.Viewers[token] = &state.Viewer{
                     FirstSeen: time.Now(),
                     LastSeen: time.Now(),
                     Ip: r.RemoteAddr,
                 }
+                stream.Unlock()
 
                 // assemble the url with the token appended
                 query := r.URL.Query()

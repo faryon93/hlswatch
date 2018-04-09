@@ -56,7 +56,7 @@ func StreamWatcher(ctx *state.State) {
     for _, f := range files {
        if f.IsDir() {
            log.Println("[streamwatcher] adding stream \"" + f.Name() + "\"")
-           ctx.Streams[f.Name()] = state.NewStream()
+           ctx.SetStream(f.Name(), state.NewStream())
        }
     }
 
@@ -69,12 +69,12 @@ func StreamWatcher(ctx *state.State) {
         // a new stream is created in fs
         if event.Op == fsnotify.Create && util.IsDir(event.Name) {
             log.Println("[streamwatcher] adding new stream \"" + streamName + "\"")
-            ctx.Streams[streamName] = state.NewStream()
+            ctx.SetStream(streamName, state.NewStream())
 
         // stream is removed from fs
         } else if event.Op == fsnotify.Remove {
             log.Println("[streamwatcher] removing stream \"" + streamName + "\"")
-            delete(ctx.Streams, streamName)
+            ctx.RemoveStream(streamName)
         }
     }
 }

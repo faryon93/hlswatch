@@ -49,12 +49,14 @@ func Stats(ctx *state.State, w http.ResponseWriter, r *http.Request) {
 
     // construct the response
     response := make(map[string]streamStats)
+    ctx.StreamsMutex.Lock()
     for streamName, stream := range ctx.Streams {
         response[streamName] = streamStats{
             CurrentViewers: stream.GetCurrentViewers(timeout),
             Uptime: int(stream.GetUptime().Seconds()),
         }
     }
+    ctx.StreamsMutex.Unlock()
 
     Jsonify(w, response)
 }

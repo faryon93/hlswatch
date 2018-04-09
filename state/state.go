@@ -21,6 +21,7 @@ package state
 
 import (
     "github.com/faryon93/hlswatch/config"
+    "sync"
 )
 
 
@@ -32,6 +33,8 @@ type State struct {
     Conf *config.Conf
 
     CloseChan chan bool
+
+    StreamsMutex sync.Mutex
     Streams map[string]*Stream
 }
 
@@ -54,6 +57,20 @@ func New() *State {
 
 func (s *State) GetStream(name string) (*Stream) {
     return s.Streams[name]
+}
+
+func (s *State) SetStream(name string, stream *Stream) {
+    s.StreamsMutex.Lock()
+    defer s.StreamsMutex.Unlock()
+
+    s.Streams[name] = stream
+}
+
+func (s *State) RemoveStream(name string) {
+    s.StreamsMutex.Lock()
+    defer s.StreamsMutex.Unlock()
+
+    delete(s.Streams, name)
 }
 
 func (s *State) Shutdown() {

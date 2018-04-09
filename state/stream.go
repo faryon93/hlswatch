@@ -21,6 +21,7 @@ package state
 
 import (
     "time"
+    "sync"
 )
 
 
@@ -29,6 +30,7 @@ import (
 // --------------------------------------------------------------------------------------
 
 type Stream struct {
+    sync.Mutex
     Viewers map[string]*Viewer
     StartTime time.Time
 }
@@ -52,12 +54,15 @@ func NewStream() *Stream {
 
 func (s *Stream) GetCurrentViewers(timeout time.Duration) int {
     count := 0
+
+    s.Lock()
     for _, viewer := range s.Viewers {
         // only count those who did not time out already
         if viewer.LastSeen.Add(timeout).After(time.Now()) {
             count++
         }
     }
+    s.Unlock()
 
     return count
 }
