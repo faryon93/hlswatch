@@ -5,11 +5,11 @@ ENV TZ=Europe/Berlin
 
 # install dependencies
 RUN apk --update --no-cache add git gcc musl-dev tzdata
-WORKDIR /go/src/github.com/faryon93/hlswatch
+WORKDIR /go/src/github.com/aminhusni/hlswatch
 ADD ./ ./
 
 # build the go binary
-RUN go get github.com/faryon93/hlswatch && \
+RUN go get github.com/aminhusni/hlswatch && \
     go build -v -o /tmp/hlswatch .
 
 FROM alpine:latest
