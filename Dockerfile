@@ -9,7 +9,9 @@ WORKDIR /go/src/github.com/aminhusni/hlswatch
 ADD ./ ./
 
 # build the go binary
-RUN go get github.com/aminhusni/hlswatch && \
+RUN go env -w GOSUMDB=sum.golang.google.cn && \
+    go env -w GOPROXY=https://goproxy.cn && \
+    go get github.com/aminhusni/hlswatch && \
     go build -v -o /tmp/hlswatch .
 
 FROM alpine:latest
